@@ -124,61 +124,6 @@ def hypotesis_testP5(Dados, Wavelet, Modo):
                     coeff[i+1] = 0
     return pywt.waverec(Coeffs, Wavelet)
 
-def regular_design(Dados, Wavelet, Modo):
-#Calcular os coeficientes
-    Coeffs = pywt.wavedec(Dados, Wavelet, level = pywt.dwt_max_level(len(Dados), Wavelet))
-#Aplicar Limiarização
-    for i in range(len(Coeffs)-1):
-        for j in range(len(Coeffs[i+1])):
-            if Modo == "soft":
-                Coeffs[i+1][j] = (Coeffs[i+1][j]/np.abs(Coeffs[i+1][j])) * np.maximum(np.abs(Coeffs[i+1][j]) - (np.median(np.abs(Coeffs[i+1]))/0.6745)*np.sqrt((2*np.log(len(Dados)))/len(Dados)), 0)
-            if Modo == "hard":
-                if np.abs(Coeffs[i+1][j]) <= (np.median(np.abs(Coeffs[i+1]))/0.6745)*np.sqrt((2*np.log(len(Dados)))/len(Dados)):
-                    Coeffs[i+1][j] = 0
-#Construir a função
-    return pywt.waverec(Coeffs, Wavelet)
-
-
-def irregular_design(Dados, Wavelet, Modo):
-#Calcular os coeficientes
-    Coeffs = pywt.wavedec(Dados, Wavelet, level = pywt.dwt_max_level(len(Dados), Wavelet))
-#Cálculo do Parâmetro
-    Parametro = ""
-
-#Aplicar Limiarização
-    Coeffs[-1] = 0*Coeffs[-1]
-    for i in range(len(Coeffs)-1):
-        for j in range(len(Coeffs[i+1])):
-            if Modo == "soft":
-                Coeffs[i+1][j] = (Coeffs[i+1][j]/np.abs(Coeffs[i+1][j])) * np.maximum(np.abs(Coeffs[i+1][j]) - Parametro, 0)
-            if Modo == "hard":
-                if np.abs(Coeffs[i+1][j]) <= Parametro:
-                    Coeffs[i+1][j] = 0
-#Construir a função
-    return pywt.waverec(Coeffs, Wavelet)
-
-
-def uniform_design(Dados, Wavelet, Modo):
-#Calcular os coeficientes
-    Coeffs = pywt.wavedec(Dados, Wavelet, level = pywt.dwt_max_level(len(Dados), Wavelet))
-#Calcular Parametro
-    L = []
-    for i in range(len(Coeffs)-1):
-        for j in range(len(Coeffs[i+1])):
-            L.append(np.abs(Coeffs[i+1][j]))
-    Parametro = (np.median(L)/0.6745)*np.sqrt(2*np.log((len(Dados)))/len(Dados))
-#Aplicar Limiarização
-    Coeffs[-1] = 0*Coeffs[-1]
-    for i in range(len(Coeffs)-1):
-        for j in range(len(Coeffs[i+1])):
-            if Modo == "soft":
-                Coeffs[i+1][j] = (Coeffs[i+1][j]/np.abs(Coeffs[i+1][j])) * np.maximum(np.abs(Coeffs[i+1][j]) - Parametro, 0)
-            if Modo == "hard":
-                if np.abs(Coeffs[i+1][j]) <= Parametro:
-                    Coeffs[i+1][j] = 0
-#Construir a função
-    return pywt.waverec(Coeffs, Wavelet)
-
 #Dados
 t = np.linspace(0,1,1024)
 Z = np.sqrt(t*(1-t))*np.sin((2.1*np.pi)/(t+0.05))
