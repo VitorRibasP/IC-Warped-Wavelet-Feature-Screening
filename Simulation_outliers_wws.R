@@ -1,5 +1,5 @@
 #A função numSelectFeat_wws foi criada no artigo 
-#O link para o artigo é: 
+#O link para o artigo é: https://www.tandfonline.com/doi/full/10.1080/10618600.2024.2342984?scroll=top&needAccess=true#abstract
 
 #Para essa simulação, esse mesmo código foi rodado 2 vezes
 #Na primeira, foi considerado a função original
