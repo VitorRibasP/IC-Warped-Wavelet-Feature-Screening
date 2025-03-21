@@ -1,5 +1,4 @@
 library(tidyverse)
-library(lubridate)
 library(gridExtra)
 library(xtable)
 library(corrplot)
@@ -195,6 +194,40 @@ for (i in 1:10) {
 Correlacoes_Originais_Fase[,9] <- c(1,1,2,1,2,0,4,0,1,4)
 
 #Gráfico de linhas com mudança de fase
+
+#Séries Temporais Defasadas junto com O3
+Grafico_Linhas_Mudanca_Fase <- function(y, defasagem,titulo, legenda) {
+  df <- data.frame(x = Dados$time, o3 = Dados$o3, 
+                   y = c(y[-(1:defasagem)], rep(NA, defasagem)))
+  
+  # Encontra os limites dos eixos
+  lim_o3 <- range(df$o3, na.rm = TRUE)
+  lim_y <- range(df$y, na.rm = TRUE)
+  
+  # Transforma os dados de y para a escala de o3
+  scale_factor <- (lim_o3[2] - lim_o3[1]) / (lim_y[2] - lim_y[1])
+  df$y_trans <- (df$y - lim_y[1]) * scale_factor + lim_o3[1]
+  
+  ggplot(df, aes(x = x)) +
+    geom_line(aes(y = o3, color = "O3"), show.legend = FALSE) +
+    geom_line(aes(y = y_trans, color = "Y"), show.legend = FALSE) +
+    scale_y_continuous(
+      name = "O3",
+      sec.axis = sec_axis(~ (. - lim_o3[1]) / scale_factor + lim_y[1], name = legenda)
+    ) +
+    labs(title = titulo, x = "Data", y = "O3") +
+    scale_color_manual(
+      name = "Legenda",
+      values = c("O3" = "blue", "Y" = "red"),
+      labels = c("O3", legenda)
+    ) +
+    theme_minimal() +
+    theme(
+      axis.title.y.right = element_text(color = "red"),
+      axis.title.y.left = element_text(color = "blue"),
+      legend.position = "bottom"
+    )
+}
 
 GMFCO <- Grafico_Linhas_Mudanca_Fase(Dados$co, 1, "CO", "CO")
 GMFNO <- Grafico_Linhas_Mudanca_Fase(Dados$no, 1, "NO", "NO")
